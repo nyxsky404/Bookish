@@ -4,6 +4,7 @@ import { useBooks } from "@/hooks/useBooks";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { Search, Filter, X, Heart, Check } from "lucide-react";
+import type { Book } from "@/hooks/useBooks";
 import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -53,7 +54,7 @@ export default function BooksPage() {
     setTimeout(() => setCartFeedback(prev => ({ ...prev, [bookId]: false })), 1500);
   };
 
-  const handleWishlistToggle = (book: any, e: React.MouseEvent) => {
+  const handleWishlistToggle = (book: Book, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist({
