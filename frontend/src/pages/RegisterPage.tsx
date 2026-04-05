@@ -14,6 +14,7 @@ export default function RegisterPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirm: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -149,13 +150,20 @@ export default function RegisterPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   id="confirm"
-                  type={showPassword ? "text" : "password"}
+                  type={showConfirm ? "text" : "password"}
                   required
                   placeholder="••••••••"
                   value={form.confirm}
                   onChange={(event) => setForm((v) => ({ ...v, confirm: event.target.value }))}
-                  className="w-full h-11 pl-10 pr-4 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full h-11 pl-10 pr-10 rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
 
