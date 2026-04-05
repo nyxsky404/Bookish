@@ -3,11 +3,18 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useBooks } from "@/hooks/useBooks";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { Search, Filter, X, Heart, Check } from "lucide-react";
+import { Search, Filter, X, Heart, Check, ArrowUpDown } from "lucide-react";
 import type { Book } from "@/hooks/useBooks";
 import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+
+const SORT_OPTIONS = [
+  { label: "Relevance", value: "" },
+  { label: "Price: Low to High", value: "price_asc" },
+  { label: "Price: High to Low", value: "price_desc" },
+  { label: "Top Rated", value: "rating_desc" },
+];
 
 const GENRES = [
   "All",
@@ -26,9 +33,17 @@ export default function BooksPage() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [showFilters, setShowFilters] = useState(false);
   const genre = searchParams.get("genre") || "";
+  const sort = searchParams.get("sort") || "";
   const page = Number(searchParams.get("page") || 1);
 
-  const { books, pagination, loading, error } = useBooks({ page, genre, search: searchParams.get("search") || "" });
+  const { books: rawBooks, pagination, loading, error } = useBooks({ page, genre, search: searchParams.get("search") || "" });
+
+  const books = [...rawBooks].sort((a, b) => {
+    if (sort === "price_asc") return a.price - b.price;
+    if (sort === "price_desc") return b.price - a.price;
+    if (sort === "rating_desc") return b.rating - a.rating;
+    return 0;
+  });
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [cartFeedback, setCartFeedback] = useState<Record<string, boolean>>({});
@@ -74,13 +89,27 @@ export default function BooksPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-2xl md:text-3xl font-bold">Browse Books</h1>
-          <button
-            className="md:hidden flex items-center gap-1 text-sm border rounded-md px-3 py-1.5"
-            onClick={() => setShowFilters(!showFilters)}
-          >
-            <Filter className="h-4 w-4" />
-            Filters
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="relative hidden md:flex items-center">
+              <ArrowUpDown className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <select
+                value={sort}
+                onChange={(e) => setParam("sort", e.target.value)}
+                className="h-9 pl-8 pr-3 rounded-md border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary appearance-none cursor-pointer"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              className="md:hidden flex items-center gap-1 text-sm border rounded-md px-3 py-1.5"
+              onClick={() => setShowFilters(!showFilters)}
+            >
+              <Filter className="h-4 w-4" />
+              Filters
+            </button>
+          </div>
         </div>
 
         {/* Search and Filters */}
