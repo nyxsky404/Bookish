@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Heart, ShoppingCart, Trash2 } from "lucide-react";
 import { useWishlist } from "@/context/WishlistContext";
@@ -9,10 +10,13 @@ import Footer from "@/components/Footer";
 export default function WishlistPage() {
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleAddToCart = async (bookId: string) => {
+    setLoadingId(bookId);
     await addToCart(bookId);
     removeFromWishlist(bookId);
+    setLoadingId(null);
   };
 
   return (
@@ -59,10 +63,11 @@ export default function WishlistPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleAddToCart(item.bookId)}
-                      className="flex-1 h-8 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-1"
+                      disabled={loadingId === item.bookId}
+                      className="flex-1 h-8 rounded-md bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-1 disabled:opacity-60"
                     >
                       <ShoppingCart className="h-3 w-3" />
-                      Add to Cart
+                      {loadingId === item.bookId ? "Adding..." : "Add to Cart"}
                     </button>
                     <button
                       onClick={() => removeFromWishlist(item.bookId)}
