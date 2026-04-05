@@ -14,12 +14,7 @@ echo "🚀 Bookish Deploy — $(date)"
 echo "   App dir : $APP_DIR"
 echo "   Branch  : $BRANCH"
 
-# ── Step 1: Ensure directories exist (idempotent with -p) ──────────────────
-mkdir -p "$APP_DIR"
-mkdir -p "$LOG_DIR"
-echo "✔ Directories ready"
-
-# ── Step 2: Clone or pull repository ───────────────────────────────────────
+# ── Step 1: Clone or pull repository ───────────────────────────────────────
 if [ -d "$APP_DIR/.git" ]; then
   echo "✔ Repo exists — pulling latest..."
   git -C "$APP_DIR" fetch origin
@@ -28,6 +23,10 @@ else
   echo "✔ Cloning repo..."
   git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
 fi
+
+# ── Step 2: Ensure log directory exists ────────────────────────────────────
+mkdir -p "$LOG_DIR"
+echo "✔ Directories ready"
 
 cd "$APP_DIR"
 echo "✔ Code is up to date"
